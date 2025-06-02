@@ -2,5 +2,5 @@
 cat <<EOF
 ---
 config_vars:
-  PATH: ".heroku/terraform:\$PATH"
+  PATH: "\$HOME/.heroku/terraform:\$HOME/.heroku/unzip:\$PATH"
 EOF

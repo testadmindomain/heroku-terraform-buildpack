@@ -12,34 +12,33 @@ if ! command -v unzip >/dev/null 2>&1; then
   curl -sSLO http://ftp.debian.org/debian/pool/main/u/unzip/unzip_${UNZIP_VERSION}-26_amd64.deb
   dpkg -x unzip_${UNZIP_VERSION}-26_amd64.deb .
 
-
-  INSTALL_UNZIP_DIR="$BUILD_DIR/.heroku/unzip"
+  INSTALL_UNZIP_DIR="/app/.heroku/unzip"
   mkdir -p "$INSTALL_UNZIP_DIR"
   cp -a ./usr/bin/unzip "$INSTALL_UNZIP_DIR/unzip"
   chmod +x "$INSTALL_UNZIP_DIR/unzip"
 
   export PATH="$INSTALL_UNZIP_DIR:$PATH"
+else
+  echo "       unzip already available"
+  INSTALL_UNZIP_DIR="$(command -v unzip | xargs dirname)"
 fi
 
 echo "-----> Installing Terraform"
 
 TERRAFORM_VERSION="1.7.5"
-INSTALL_TF_DIR="$BUILD_DIR/.heroku/terraform"
+INSTALL_TF_DIR="/app/.heroku/terraform"
 
 mkdir -p "$INSTALL_TF_DIR"
 cd /tmp || exit 1
 
 curl -sSLO "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
-
-
 "$INSTALL_UNZIP_DIR/unzip" -o "terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -d "$INSTALL_TF_DIR"
 chmod +x "$INSTALL_TF_DIR/terraform"
 
 echo "-----> Writing .profile.d/terraform.sh"
-mkdir -p "$BUILD_DIR/.profile.d"
+mkdir -p "/app/.profile.d"
 
-
-cat <<EOF > "$BUILD_DIR/.profile.d/terraform.sh"
+cat <<EOF > "/app/.profile.d/terraform.sh"
 export PATH="\$HOME/.heroku/terraform:\$HOME/.heroku/unzip:\$PATH"
 EOF
 

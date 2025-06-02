@@ -4,35 +4,17 @@ set -e
 
 BUILD_DIR=$1
 
-echo "-----> Installing unzip (if not present)"
-if ! command -v unzip >/dev/null 2>&1; then
-  echo "       unzip not found, installing locally..."
-  UNZIP_VERSION=6.0
-  mkdir -p /tmp/unzip-src
-  cd /tmp/unzip-src
-
-  curl -sSLO http://ftp.debian.org/debian/pool/main/u/unzip/unzip_${UNZIP_VERSION}-26_amd64.deb
-  dpkg -x unzip_${UNZIP_VERSION}-26_amd64.deb .
-
-  INSTALL_UNZIP_DIR="$BUILD_DIR/.heroku/unzip"
-  mkdir -p "$INSTALL_UNZIP_DIR"
-  cp -a ./usr/bin/unzip "$INSTALL_UNZIP_DIR/unzip"
-  chmod +x "$INSTALL_UNZIP_DIR/unzip"
-else
-  echo "       unzip already available"
-  INSTALL_UNZIP_DIR=$(dirname "$(command -v unzip)")
-fi
-
 echo "-----> Installing Terraform"
-TERRAFORM_VERSION="1.7.5"
-INSTALL_TF_DIR="$BUILD_DIR/.heroku/terraform"
 
-mkdir -p "$INSTALL_TF_DIR"
-cd /tmp || exit 1
+TERRAFORM_VERSION="1.7.5"
+INSTALL_DIR="$BUILD_DIR/bin"
+
+mkdir -p "$INSTALL_DIR"
+cd /tmp
 
 curl -sSLO "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
 
-"$INSTALL_UNZIP_DIR/unzip" -o "terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -d "$INSTALL_TF_DIR"
-chmod +x "$INSTALL_TF_DIR/terraform"
+unzip -o "terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -d "$INSTALL_DIR"
+chmod +x "$INSTALL_DIR/terraform"
 
 echo "-----> Terraform v$TERRAFORM_VERSION installed"
